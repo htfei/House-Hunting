@@ -6,17 +6,21 @@ import requests
 import csv
 import time
 import re
-url = 'http://bj.58.com/pinpaigongyu/pn/{page}/?minprice=2000_4000'
+
+url = 'http://wh.58.com/pinpaigongyu/pn/{page}/?minprice=1000_2000'
 
 #已完成的 页数序号，初始为0
 page = 0
 
-csv_file = open("rent.csv","w",newline='') 
+csv_file = open("rent.csv","w",newline='')
 csv_writer = csv.writer(csv_file,delimiter=',')
 
 #去掉所有的html标签
 reg1 = re.compile("<[^>]*>")
 reg2 = re.compile('</?w+[^>]*>')
+
+print('this is begin , please wait some time and you can do some others you like ...')
+
 while True:
     page += 1
     print('fetch:',url.format(page=page))
@@ -34,7 +38,7 @@ while True:
         house_title = str(house.select('h2')[0])
         house_title = house_title.replace('<h2>','')
         house_title = house_title.replace('</h2>','')
-        print(house_title)
+        #print(house_title)
         #reg2.sub('',house_title)
         print(house_title)
         house_url = urljoin(url,house.select('a')[0]['href'])
@@ -45,20 +49,22 @@ while True:
         print(house_info_list)
         '''
 
-      
-        
+
+
         # 如果第二列是公寓名则取第一列作为地址
         house_info = str(house_info_list[1])
-        print(house_info)
+        #print(house_info)
         if '公寓' in house_info or '青年社区' in house_info:
             house_location = str(house_info_list[0])
         else:
             house_location = str(house_info_list[1])
-        print(house_location)
+        #print(house_location)
         house_money = str(house.select('.money')[0].select('b')[0])
         house_money = reg1.sub('',house_money)
         #print(type(house_title),type(house_location),type(house_money),type(house_url))
         csv_writer.writerow([house_title,house_location,house_money,house_url])
-        if page % 60 == 0:
+        if page % 30 == 0:
             time.sleep(3)
 csv_file.close()
+
+print('this is end !')
